@@ -571,7 +571,11 @@ function Index() {
                 <Button onClick={adicionar}>Salvar</Button>
               </DialogFooter>
             </DialogContent>
-          </Dialog>
+            </Dialog>
+            <Button variant="outline" size="icon" onClick={logout} title="Sair">
+              <LogOut className="h-4 w-4" />
+            </Button>
+          </div>
         </div>
       </header>
 
