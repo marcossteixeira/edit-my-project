@@ -35,6 +35,7 @@ import {
   HandCoins,
   Search,
   LogOut,
+  Pencil,
 } from "lucide-react";
 import { useAuth } from "@/lib/auth";
 
@@ -214,6 +215,7 @@ function Index() {
   const [endereco, setEndereco] = useState("");
   const [serie, setSerie] = useState("");
   const [doColegio, setDoColegio] = useState<"S" | "N">("N");
+  const [editandoId, setEditandoId] = useState<string | null>(null);
 
   // dar baixa (cobrança + parcela)
   const [baixaId, setBaixaId] = useState<string | null>(null);
@@ -353,6 +355,41 @@ function Index() {
     const v = parseFloat(valor.replace(",", "."));
     if (!cliente.trim() || isNaN(v) || v <= 0) return;
     const n = Math.max(1, parseInt(numParcelas || "1", 10) || 1);
+    if (editandoId) {
+      setCobrancas((prev) =>
+        prev.map((c) => {
+          if (c.id !== editandoId) return c;
+          const valorMudou = Math.round(c.valor * 100) !== Math.round(v * 100);
+          const numMudou = c.parcelas.length !== n;
+          const vencMudou = (c.vencimento || "") !== (vencimento || "");
+          const regenerar = valorMudou || numMudou;
+          return {
+            ...c,
+            cliente: cliente.trim(),
+            contato: contato.trim(),
+            descricao: descricao.trim(),
+            valor: v,
+            vencimento: vencimento || undefined,
+            aluno: aluno.trim() || undefined,
+            endereco: endereco.trim() || undefined,
+            serie: serie.trim() || undefined,
+            doColegio: doColegio === "S",
+            parcelas: regenerar
+              ? gerarParcelas(v, n, vencimento || undefined)
+              : vencMudou
+                ? c.parcelas.map((p, i) => ({
+                    ...p,
+                    vencimento: vencimento ? addMonths(vencimento, i) : undefined,
+                  }))
+                : c.parcelas,
+          };
+        }),
+      );
+      resetForm();
+      setEditandoId(null);
+      setOpen(false);
+      return;
+    }
     const nova: Cobranca = {
       id: crypto.randomUUID(),
       cliente: cliente.trim(),
@@ -370,6 +407,21 @@ function Index() {
     setCobrancas((prev) => [nova, ...prev]);
     resetForm();
     setOpen(false);
+  }
+
+  function editar(c: Cobranca) {
+    setCliente(c.cliente);
+    setContato(c.contato);
+    setDescricao(c.descricao);
+    setValor(c.valor.toFixed(2).replace(".", ","));
+    setVencimento(c.vencimento ?? "");
+    setNumParcelas(String(c.parcelas.length));
+    setAluno(c.aluno ?? "");
+    setEndereco(c.endereco ?? "");
+    setSerie(c.serie ?? "");
+    setDoColegio(c.doColegio ? "S" : "N");
+    setEditandoId(c.id);
+    setOpen(true);
   }
 
   function remover(id: string) {
@@ -482,7 +534,16 @@ function Index() {
             </div>
           </div>
           <div className="flex items-center gap-2">
-            <Dialog open={open} onOpenChange={setOpen}>
+            <Dialog
+              open={open}
+              onOpenChange={(o) => {
+                setOpen(o);
+                if (!o) {
+                  setEditandoId(null);
+                  resetForm();
+                }
+              }}
+            >
               <DialogTrigger asChild>
                 <Button>
                   <Plus className="mr-2 h-4 w-4" /> Nova cobrança
@@ -490,7 +551,9 @@ function Index() {
               </DialogTrigger>
             <DialogContent>
               <DialogHeader>
-                <DialogTitle>Nova cobrança</DialogTitle>
+                <DialogTitle>
+                  {editandoId ? "Editar cobrança" : "Nova cobrança"}
+                </DialogTitle>
               </DialogHeader>
               <div className="grid gap-4">
                 <div className="grid gap-2">
@@ -565,10 +628,39 @@ function Index() {
                   }
                   return null;
                 })()}
+                {editandoId && (() => {
+                  const cAtual = cobrancas.find((x) => x.id === editandoId);
+                  if (!cAtual) return null;
+                  const v = parseFloat(valor.replace(",", "."));
+                  const n = Math.max(1, parseInt(numParcelas || "1", 10) || 1);
+                  const valorMudou =
+                    !isNaN(v) && Math.round(cAtual.valor * 100) !== Math.round(v * 100);
+                  const numMudou = cAtual.parcelas.length !== n;
+                  const temPagamentos = cAtual.parcelas.some((p) => p.pagamentos.length > 0);
+                  if ((valorMudou || numMudou) && temPagamentos) {
+                    return (
+                      <p className="text-xs text-destructive">
+                        Alterar o valor ou o número de parcelas vai recriar as parcelas e apagar os pagamentos já registrados.
+                      </p>
+                    );
+                  }
+                  return null;
+                })()}
               </div>
               <DialogFooter>
-                <Button variant="ghost" onClick={() => setOpen(false)}>Cancelar</Button>
-                <Button onClick={adicionar}>Salvar</Button>
+                <Button
+                  variant="ghost"
+                  onClick={() => {
+                    setOpen(false);
+                    setEditandoId(null);
+                    resetForm();
+                  }}
+                >
+                  Cancelar
+                </Button>
+                <Button onClick={adicionar}>
+                  {editandoId ? "Salvar alterações" : "Salvar"}
+                </Button>
               </DialogFooter>
             </DialogContent>
             </Dialog>
@@ -734,6 +826,14 @@ function Index() {
                                   disabled={c.restante <= 0}
                                 >
                                   <HandCoins className="mr-1 h-4 w-4" /> Dar baixa
+                                </Button>
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
+                                  onClick={() => editar(c)}
+                                  aria-label="Editar"
+                                >
+                                  <Pencil className="h-4 w-4" />
                                 </Button>
                                 <Button
                                   variant="ghost"
