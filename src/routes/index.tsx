@@ -197,6 +197,7 @@ function StatusBadge({ status }: { status: Status }) {
 }
 
 function Index() {
+  const { logout } = useAuth();
   const [cobrancas, setCobrancas] = useState<Cobranca[]>([]);
   const [loaded, setLoaded] = useState(false);
   const [open, setOpen] = useState(false);
