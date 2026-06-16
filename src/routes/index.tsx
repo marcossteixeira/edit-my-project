@@ -534,7 +534,16 @@ function Index() {
             </div>
           </div>
           <div className="flex items-center gap-2">
-            <Dialog open={open} onOpenChange={setOpen}>
+            <Dialog
+              open={open}
+              onOpenChange={(o) => {
+                setOpen(o);
+                if (!o) {
+                  setEditandoId(null);
+                  resetForm();
+                }
+              }}
+            >
               <DialogTrigger asChild>
                 <Button>
                   <Plus className="mr-2 h-4 w-4" /> Nova cobrança
@@ -542,7 +551,9 @@ function Index() {
               </DialogTrigger>
             <DialogContent>
               <DialogHeader>
-                <DialogTitle>Nova cobrança</DialogTitle>
+                <DialogTitle>
+                  {editandoId ? "Editar cobrança" : "Nova cobrança"}
+                </DialogTitle>
               </DialogHeader>
               <div className="grid gap-4">
                 <div className="grid gap-2">
