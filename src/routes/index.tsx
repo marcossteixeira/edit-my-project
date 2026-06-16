@@ -830,6 +830,14 @@ function Index() {
                                 <Button
                                   variant="ghost"
                                   size="icon"
+                                  onClick={() => editar(c)}
+                                  aria-label="Editar"
+                                >
+                                  <Pencil className="h-4 w-4" />
+                                </Button>
+                                <Button
+                                  variant="ghost"
+                                  size="icon"
                                   onClick={() => remover(c.id)}
                                   aria-label="Remover"
                                 >
