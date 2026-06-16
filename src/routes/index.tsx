@@ -355,6 +355,41 @@ function Index() {
     const v = parseFloat(valor.replace(",", "."));
     if (!cliente.trim() || isNaN(v) || v <= 0) return;
     const n = Math.max(1, parseInt(numParcelas || "1", 10) || 1);
+    if (editandoId) {
+      setCobrancas((prev) =>
+        prev.map((c) => {
+          if (c.id !== editandoId) return c;
+          const valorMudou = Math.round(c.valor * 100) !== Math.round(v * 100);
+          const numMudou = c.parcelas.length !== n;
+          const vencMudou = (c.vencimento || "") !== (vencimento || "");
+          const regenerar = valorMudou || numMudou;
+          return {
+            ...c,
+            cliente: cliente.trim(),
+            contato: contato.trim(),
+            descricao: descricao.trim(),
+            valor: v,
+            vencimento: vencimento || undefined,
+            aluno: aluno.trim() || undefined,
+            endereco: endereco.trim() || undefined,
+            serie: serie.trim() || undefined,
+            doColegio: doColegio === "S",
+            parcelas: regenerar
+              ? gerarParcelas(v, n, vencimento || undefined)
+              : vencMudou
+                ? c.parcelas.map((p, i) => ({
+                    ...p,
+                    vencimento: vencimento ? addMonths(vencimento, i) : undefined,
+                  }))
+                : c.parcelas,
+          };
+        }),
+      );
+      resetForm();
+      setEditandoId(null);
+      setOpen(false);
+      return;
+    }
     const nova: Cobranca = {
       id: crypto.randomUUID(),
       cliente: cliente.trim(),
@@ -372,6 +407,21 @@ function Index() {
     setCobrancas((prev) => [nova, ...prev]);
     resetForm();
     setOpen(false);
+  }
+
+  function editar(c: Cobranca) {
+    setCliente(c.cliente);
+    setContato(c.contato);
+    setDescricao(c.descricao);
+    setValor(c.valor.toFixed(2).replace(".", ","));
+    setVencimento(c.vencimento ?? "");
+    setNumParcelas(String(c.parcelas.length));
+    setAluno(c.aluno ?? "");
+    setEndereco(c.endereco ?? "");
+    setSerie(c.serie ?? "");
+    setDoColegio(c.doColegio ? "S" : "N");
+    setEditandoId(c.id);
+    setOpen(true);
   }
 
   function remover(id: string) {
