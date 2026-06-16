@@ -34,7 +34,9 @@ import {
   Wallet,
   HandCoins,
   Search,
+  LogOut,
 } from "lucide-react";
+import { useAuth } from "@/lib/auth";
 
 export const Route = createFileRoute("/")({
   head: () => ({
