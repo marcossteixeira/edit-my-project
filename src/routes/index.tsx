@@ -215,6 +215,7 @@ function Index() {
   const [endereco, setEndereco] = useState("");
   const [serie, setSerie] = useState("");
   const [doColegio, setDoColegio] = useState<"S" | "N">("N");
+  const [editandoId, setEditandoId] = useState<string | null>(null);
 
   // dar baixa (cobrança + parcela)
   const [baixaId, setBaixaId] = useState<string | null>(null);
