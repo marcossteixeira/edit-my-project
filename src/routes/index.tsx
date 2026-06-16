@@ -628,10 +628,39 @@ function Index() {
                   }
                   return null;
                 })()}
+                {editandoId && (() => {
+                  const cAtual = cobrancas.find((x) => x.id === editandoId);
+                  if (!cAtual) return null;
+                  const v = parseFloat(valor.replace(",", "."));
+                  const n = Math.max(1, parseInt(numParcelas || "1", 10) || 1);
+                  const valorMudou =
+                    !isNaN(v) && Math.round(cAtual.valor * 100) !== Math.round(v * 100);
+                  const numMudou = cAtual.parcelas.length !== n;
+                  const temPagamentos = cAtual.parcelas.some((p) => p.pagamentos.length > 0);
+                  if ((valorMudou || numMudou) && temPagamentos) {
+                    return (
+                      <p className="text-xs text-destructive">
+                        Alterar o valor ou o número de parcelas vai recriar as parcelas e apagar os pagamentos já registrados.
+                      </p>
+                    );
+                  }
+                  return null;
+                })()}
               </div>
               <DialogFooter>
-                <Button variant="ghost" onClick={() => setOpen(false)}>Cancelar</Button>
-                <Button onClick={adicionar}>Salvar</Button>
+                <Button
+                  variant="ghost"
+                  onClick={() => {
+                    setOpen(false);
+                    setEditandoId(null);
+                    resetForm();
+                  }}
+                >
+                  Cancelar
+                </Button>
+                <Button onClick={adicionar}>
+                  {editandoId ? "Salvar alterações" : "Salvar"}
+                </Button>
               </DialogFooter>
             </DialogContent>
             </Dialog>
