@@ -34,7 +34,9 @@ import {
   Wallet,
   HandCoins,
   Search,
+  LogOut,
 } from "lucide-react";
+import { useAuth } from "@/lib/auth";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -195,6 +197,7 @@ function StatusBadge({ status }: { status: Status }) {
 }
 
 function Index() {
+  const { logout } = useAuth();
   const [cobrancas, setCobrancas] = useState<Cobranca[]>([]);
   const [loaded, setLoaded] = useState(false);
   const [open, setOpen] = useState(false);
@@ -478,12 +481,13 @@ function Index() {
               <p className="text-xs text-muted-foreground">Saiba quem está devendo</p>
             </div>
           </div>
-          <Dialog open={open} onOpenChange={setOpen}>
-            <DialogTrigger asChild>
-              <Button>
-                <Plus className="mr-2 h-4 w-4" /> Nova cobrança
-              </Button>
-            </DialogTrigger>
+          <div className="flex items-center gap-2">
+            <Dialog open={open} onOpenChange={setOpen}>
+              <DialogTrigger asChild>
+                <Button>
+                  <Plus className="mr-2 h-4 w-4" /> Nova cobrança
+                </Button>
+              </DialogTrigger>
             <DialogContent>
               <DialogHeader>
                 <DialogTitle>Nova cobrança</DialogTitle>
@@ -567,7 +571,11 @@ function Index() {
                 <Button onClick={adicionar}>Salvar</Button>
               </DialogFooter>
             </DialogContent>
-          </Dialog>
+            </Dialog>
+            <Button variant="outline" size="icon" onClick={logout} title="Sair">
+              <LogOut className="h-4 w-4" />
+            </Button>
+          </div>
         </div>
       </header>
 
