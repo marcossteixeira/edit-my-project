@@ -35,6 +35,7 @@ import {
   HandCoins,
   Search,
   LogOut,
+  Pencil,
 } from "lucide-react";
 import { useAuth } from "@/lib/auth";
 
