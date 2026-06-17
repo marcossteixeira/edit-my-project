@@ -525,9 +525,9 @@ function Index() {
       <header className="border-b">
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 py-5">
           <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary text-primary-foreground">
+            <Link to="/" className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary text-primary-foreground">
               <img src={logoAsset.url} alt="Logo" className="h-5 w-5 object-contain" />
-            </div>
+            </Link>
             <div>
               <h1 className="text-lg font-semibold leading-tight">Cobranças</h1>
               <p className="text-xs text-muted-foreground">Saiba quem está devendo</p>
