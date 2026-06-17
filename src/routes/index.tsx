@@ -526,7 +526,7 @@ function Index() {
         <div className="mx-auto flex max-w-6xl items-center justify-between gap-3 px-4 py-5">
           <div className="flex items-center gap-3">
             <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary text-primary-foreground">
-              <Wallet className="h-5 w-5" />
+              <img src={logoAsset.url} alt="Logo" className="h-5 w-5 object-contain" />
             </div>
             <div>
               <h1 className="text-lg font-semibold leading-tight">Cobranças</h1>
