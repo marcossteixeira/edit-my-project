@@ -31,12 +31,12 @@ import {
   CheckCircle2,
   Clock,
   AlertTriangle,
-  Wallet,
   HandCoins,
   Search,
   LogOut,
   Pencil,
 } from "lucide-react";
+import logoAsset from "@/assets/arvore-branca.png.asset.json";
 import { useAuth } from "@/lib/auth";
 
 export const Route = createFileRoute("/")({
